@@ -1,0 +1,47 @@
+package carnage.otkiplugin.listeners.classitem;
+
+import carnage.otkiplugin.items.HydronItem;
+import carnage.otkiplugin.managers.ActionBarManager;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+
+public class HydronItemListener implements Listener {
+
+    @EventHandler
+    public void onPlayerUse(PlayerInteractEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND) return;
+
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (item == null || item.getType() != Material.NAUTILUS_SHELL) return;
+
+        if (item.getItemMeta() == null ||
+                !ChatColor.stripColor(item.getItemMeta().getDisplayName()).equalsIgnoreCase("Hydron")) {
+            return;
+        }
+
+        Action action = event.getAction();
+
+        if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && player.isSneaking()) {
+            event.setCancelled(true);
+            HydronItem.cycleAbility(player);
+            String abilityName = HydronItem.getAbilityNameFromPlayer(player);
+            String message = ChatColor.GREEN + "Switched to ability: " + ChatColor.BLUE + abilityName;
+            ActionBarManager.getInstance().showTemporaryMessage(player, message, 40);
+            return;
+        }
+
+        if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+            event.setCancelled(true);
+            HydronItem.useAbility(player);
+        }
+    }
+}

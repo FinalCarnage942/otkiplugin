@@ -1,0 +1,8 @@
+name: otkiplugin
+version: '1.0-SNAPSHOT'
+main: carnage.otkiplugin.Otkiplugin
+api-version: '1.21'
+commands:
+  class:
+    description: Choose your class
+    usage: /class
