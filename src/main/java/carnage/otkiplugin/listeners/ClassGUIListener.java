@@ -2,6 +2,12 @@ package carnage.otkiplugin.listeners;
 
 import carnage.otkiplugin.items.InfernoItem;
 import carnage.otkiplugin.items.AetheriItem;
+import carnage.otkiplugin.items.CavernonItem;
+import carnage.otkiplugin.items.DraculoxItem;
+import carnage.otkiplugin.items.HydronItem;
+import carnage.otkiplugin.items.TerrarorItem;
+
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,6 +41,25 @@ public class ClassGUIListener implements Listener {
         } else if (itemName.equalsIgnoreCase("Aetheri")) {
             player.getInventory().addItem(AetheriItem.createAetheriItem());
             player.sendMessage(ChatColor.GREEN + "You selected the Aetheri class!");
+            player.closeInventory();
+        } else if (itemName.equalsIgnoreCase("Cavernon")) {
+            player.getInventory().addItem(CavernonItem.createCavernonItem());
+            player.sendMessage(ChatColor.GREEN + "You selected the Cavernon class!");
+            player.closeInventory();
+        }
+        else if (itemName.equalsIgnoreCase("Draculox")) {
+            player.getInventory().addItem(DraculoxItem.createDraculoxItem());
+            player.sendMessage(ChatColor.GREEN + "You selected the Draculox class!");
+            player.closeInventory();
+        }
+        else if (itemName.equalsIgnoreCase("Hydron")) {
+            player.getInventory().addItem(HydronItem.createHydronItem());
+            player.sendMessage(ChatColor.GREEN + "You selected the Hydron class!");
+            player.closeInventory();
+        }
+        else if (itemName.equalsIgnoreCase("Terraror")) {
+            player.getInventory().addItem(TerrarorItem.createTerrarorItem());
+            player.sendMessage(ChatColor.GREEN + "You selected the Terraror class!");
             player.closeInventory();
         }
     }

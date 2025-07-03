@@ -36,11 +36,6 @@ public class InfernoItemListener implements Listener {
         if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && player.isSneaking()) {
             event.setCancelled(true);
             InfernoItem.cycleAbility(player);
-            String abilityName = InfernoItem.getAbilityNameFromPlayer(player);
-
-            // Show temporary message for 2 seconds (40 ticks)
-            String message = ChatColor.GREEN + "Switched to ability: " + ChatColor.GOLD + abilityName;
-            ActionBarManager.getInstance().showTemporaryMessage(player, message, 40);
             return;
         }
 

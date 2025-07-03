@@ -1,9 +1,8 @@
 package carnage.otkiplugin.managers;
 
-import carnage.otkiplugin.classes.Aetheri;
-import carnage.otkiplugin.classes.Inferno;
-import carnage.otkiplugin.items.AetheriItem;
-import carnage.otkiplugin.items.InfernoItem;
+import carnage.otkiplugin.classes.*;
+import carnage.otkiplugin.items.*;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -41,63 +40,87 @@ public class ActionBarManager {
                 }
             }
         };
-        // Run every 5 ticks (4 times per second) for smooth updates
         actionBarTask.runTaskTimer(plugin, 0L, 5L);
     }
 
     private void updatePlayerActionBar(Player player) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
 
-        // Check if player is holding an Inferno item
         if (isInfernoItem(mainHand)) {
             String abilityName = InfernoItem.getAbilityNameFromPlayer(player);
             double cooldown = Inferno.getCooldownRemaining(player, abilityName);
-            String actionBarText = formatActionBar(abilityName, cooldown);
-            player.sendActionBar(actionBarText);
-            playersWithActionBar.put(player.getUniqueId(), true);
-        }
-        // Check if player is holding an Aetheri item
-        else if (isAetheriItem(mainHand)) {
+            player.sendActionBar(formatActionBar(abilityName, cooldown));
+        } else if (isAetheriItem(mainHand)) {
             String abilityName = AetheriItem.getAbilityNameFromPlayer(player);
-            double cooldown = Aetheri.getCooldownRemaining(player, abilityName);
-            String actionBarText = formatAetheriActionBar(player, abilityName, cooldown);
-            player.sendActionBar(actionBarText);
-            playersWithActionBar.put(player.getUniqueId(), true);
-        }
-        else {
-            // Clear action bar if player was previously showing it
-            if (playersWithActionBar.getOrDefault(player.getUniqueId(), false)) {
-                player.sendActionBar("");
-                playersWithActionBar.put(player.getUniqueId(), false);
+            if (abilityName.equals("Soar")) {
+                int activations = Aetheri.getSoarActivations(player);
+                player.sendActionBar(formatActionBar(abilityName, 0, activations));
+            } else {
+                double cooldown = Aetheri.getCooldownRemaining(player, abilityName);
+                player.sendActionBar(formatActionBar(abilityName, cooldown));
             }
+        } else if (isHydronItem(mainHand)) {
+            String abilityName = HydronItem.getAbilityNameFromPlayer(player);
+            double cooldown = Hydron.getCooldownRemaining(player, abilityName);
+            player.sendActionBar(formatActionBar(abilityName, cooldown));
+        } else if (isCavernonItem(mainHand)) {
+            String abilityName = CavernonItem.getAbilityNameFromPlayer(player);
+            double cooldown = Cavernon.getCooldownRemaining(player, abilityName);
+            player.sendActionBar(formatActionBar(abilityName, cooldown));
+        } else if (isTerrarorItem(mainHand)) {
+            String abilityName = TerrarorItem.getAbilityNameFromPlayer(player);
+            double cooldown = Terraror.getCooldownRemaining(player, abilityName);
+            player.sendActionBar(formatActionBar(abilityName, cooldown));
+        } else if (isDraculoxItem(mainHand)) {
+            String abilityName = DraculoxItem.getAbilityNameFromPlayer(player);
+            player.sendActionBar(formatActionBar(abilityName, 0));
+        } else {
+            player.sendActionBar("");
         }
     }
 
     private boolean isInfernoItem(ItemStack item) {
-        if (item == null || item.getType() != Material.BLAZE_ROD) return false;
-        if (item.getItemMeta() == null) return false;
-        String displayName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
-        return displayName.equalsIgnoreCase("Inferno");
+        if (item == null || item.getType() != Material.BLAZE_ROD || item.getItemMeta() == null) return false;
+        return item.getItemMeta().hasDisplayName() && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals("Inferno");
     }
 
     private boolean isAetheriItem(ItemStack item) {
-        if (item == null || item.getType() != Material.FEATHER) return false;
-        if (item.getItemMeta() == null) return false;
-        String displayName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
-        return displayName.equalsIgnoreCase("Aetheri");
+        if (item == null || item.getType() != Material.FEATHER || item.getItemMeta() == null) return false;
+        return item.getItemMeta().hasDisplayName() && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals("Aetheri");
+    }
+
+    private boolean isHydronItem(ItemStack item) {
+        if (item == null || item.getType() != Material.NAUTILUS_SHELL || item.getItemMeta() == null) return false;
+        return item.getItemMeta().hasDisplayName() && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals("Hydron");
+    }
+
+    private boolean isCavernonItem(ItemStack item) {
+        if (item == null || item.getType() != Material.STONE_PICKAXE || item.getItemMeta() == null) return false;
+        return item.getItemMeta().hasDisplayName() && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals("Cavernon");
+    }
+
+    private boolean isTerrarorItem(ItemStack item) {
+        if (item == null || item.getType() != Material.BONE || item.getItemMeta() == null) return false;
+        return item.getItemMeta().hasDisplayName() && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals("Terraror");
+    }
+
+    private boolean isDraculoxItem(ItemStack item) {
+        if (item == null || item.getType() != Material.BLAZE_POWDER || item.getItemMeta() == null) return false;
+        return item.getItemMeta().hasDisplayName() && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals("Draculox");
     }
 
     private String formatActionBar(String abilityName, double cooldown) {
-        String cooldownText;
-        ChatColor cooldownColor;
-        if (cooldown > 0) {
-            cooldownText = String.format("%.1fs", cooldown);
-            cooldownColor = ChatColor.RED;
-        } else {
-            cooldownText = "Ready";
-            cooldownColor = ChatColor.GREEN;
-        }
+        String cooldownText = cooldown > 0 ? String.format("%.1fs", cooldown) : "Ready";
+        ChatColor cooldownColor = cooldown > 0 ? ChatColor.RED : ChatColor.GREEN;
         return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + cooldownColor + cooldownText;
+    }
+
+    private String formatActionBar(String abilityName, double cooldown, int activations) {
+        if (abilityName.equals("Soar")) {
+            return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.AQUA + activations + "/6 activations";
+        } else {
+            return formatActionBar(abilityName, cooldown);
+        }
     }
 
     private String formatAetheriActionBar(Player player, String abilityName, double cooldown) {
@@ -171,34 +194,14 @@ public class ActionBarManager {
         }
     }
 
+
     public void shutdown() {
         if (actionBarTask != null) {
             actionBarTask.cancel();
         }
-        // Clear all action bars
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (playersWithActionBar.getOrDefault(player.getUniqueId(), false)) {
-                player.sendActionBar("");
-            }
+            player.sendActionBar("");
         }
         playersWithActionBar.clear();
-    }
-
-    // Method to temporarily show a message (like ability switch notification)
-    public void showTemporaryMessage(Player player, String message, int durationTicks) {
-        UUID playerId = player.getUniqueId();
-        // Show the temporary message
-        player.sendActionBar(message);
-        // Schedule to resume normal action bar after the duration
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // Only resume if player is still online and holding a class item
-                if (player.isOnline() && (isInfernoItem(player.getInventory().getItemInMainHand()) ||
-                        isAetheriItem(player.getInventory().getItemInMainHand()))) {
-                    updatePlayerActionBar(player);
-                }
-            }
-        }.runTaskLater(plugin, durationTicks);
     }
 }

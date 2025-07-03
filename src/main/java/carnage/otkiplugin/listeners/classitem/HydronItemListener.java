@@ -33,9 +33,6 @@ public class HydronItemListener implements Listener {
         if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && player.isSneaking()) {
             event.setCancelled(true);
             HydronItem.cycleAbility(player);
-            String abilityName = HydronItem.getAbilityNameFromPlayer(player);
-            String message = ChatColor.GREEN + "Switched to ability: " + ChatColor.BLUE + abilityName;
-            ActionBarManager.getInstance().showTemporaryMessage(player, message, 40);
             return;
         }
 
