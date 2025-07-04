@@ -39,6 +39,7 @@ public class CavernonItem {
         return item;
     }
 
+
     public static void cycleAbility(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item == null || item.getType() != Material.STONE_PICKAXE) return;
@@ -49,15 +50,17 @@ public class CavernonItem {
         int next = (current % 4) + 1;
         meta.getPersistentDataContainer().set(ABILITY_KEY, PersistentDataType.INTEGER, next);
 
+        // Update the lore to reflect the current ability
         if (meta.hasLore()) {
             var lore = meta.getLore();
-            if (lore != null && lore.size() >= 5) {
-                lore.set(4, ChatColor.GREEN + "Current Ability: " + getAbilityName(next));
+            if (lore != null && lore.size() > 6) {
+                lore.set(5, ChatColor.GREEN + "Current Ability: " + getAbilityName(next));
                 meta.setLore(lore);
             }
         }
         item.setItemMeta(meta);
     }
+
 
     public static void useAbility(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();

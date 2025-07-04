@@ -238,22 +238,35 @@ public class Draculox implements Listener {
     }
 
     private static void bloodDemons(Player player) {
+        // Get the entity the player is targeting
         Entity target = getTargetEntity(player);
-        if (target != null) {
-            for (int i = 0; i < 5; i++) {
-                Vex vex = (Vex) player.getWorld().spawnEntity(player.getLocation(), org.bukkit.entity.EntityType.VEX);
+
+        // Spawn vexes and set their target
+        for (int i = 0; i < 5; i++) {
+            Vex vex = (Vex) player.getWorld().spawnEntity(player.getLocation(), org.bukkit.entity.EntityType.VEX);
+            if (target != null) {
                 vex.setTarget((LivingEntity) target);
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (!vex.isDead()) {
-                            vex.remove();
-                        }
+            } else {
+                // If no specific target, attack nearby entities
+                for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
+                    if (entity instanceof LivingEntity && entity != player) {
+                        vex.setTarget((LivingEntity) entity);
+                        break; // Set the first available target
                     }
-                }.runTaskLater(plugin, 200L); // Despawn after 10 seconds
+                }
             }
+            // Despawn vexes after 10 seconds
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!vex.isDead()) {
+                        vex.remove();
+                    }
+                }
+            }.runTaskLater(plugin, 200L); // Despawn after 10 seconds
         }
-        player.getWorld().spawnParticle(Particle.CRIMSON_SPORE, player.getLocation(), 100, 1, 1, 1, 1, new Particle.DustOptions(Color.MAROON, 1));
+
+        player.getWorld().spawnParticle(Particle.LARGE_SMOKE, player.getLocation(), 100, 1, 1, 1, 0.01);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EVOKER_PREPARE_ATTACK, 1.0f, 1.0f);
     }
 

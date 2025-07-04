@@ -88,7 +88,7 @@ public class Terraror implements Listener {
         int count = 0;
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && item.getType() == Material.BONE) {
-                count += item.getAmount() / 64; // Assuming a stack is 64
+                count += item.getAmount() / 64;
             }
         }
         return count;

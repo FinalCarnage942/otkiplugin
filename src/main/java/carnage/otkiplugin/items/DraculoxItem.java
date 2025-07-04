@@ -45,21 +45,18 @@ public class DraculoxItem {
         if (item == null || item.getType() != Material.BLAZE_POWDER) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
-
         int current = meta.getPersistentDataContainer().getOrDefault(ABILITY_KEY, PersistentDataType.INTEGER, 1);
         int next = (current % 4) + 1;
         meta.getPersistentDataContainer().set(ABILITY_KEY, PersistentDataType.INTEGER, next);
-
         if (meta.hasLore()) {
             var lore = meta.lore();
-            if (lore != null && lore.size() >= 5) {
-                lore.set(4, Component.text("Current Ability: " + getAbilityName(next)).color(TextColor.color(0x00FF00)));
+            if (lore != null && lore.size() >= 6) {
+                lore.set(5, Component.text("Current Ability: " + getAbilityName(next)));
                 meta.lore(lore);
             }
         }
         item.setItemMeta(meta);
     }
-
 
     public static void useAbility(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();

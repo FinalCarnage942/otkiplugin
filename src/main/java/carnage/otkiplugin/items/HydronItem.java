@@ -51,8 +51,8 @@ public class HydronItem {
 
         if (meta.hasLore()) {
             var lore = meta.getLore();
-            if (lore != null && lore.size() >= 5) {
-                lore.set(4, ChatColor.GREEN + "Current Ability: " + getAbilityName(next));
+            if (lore != null && lore.size() >= 6) {
+                lore.set(5, ChatColor.GREEN + "Current Ability: " + getAbilityName(next));
                 meta.setLore(lore);
             }
         }
