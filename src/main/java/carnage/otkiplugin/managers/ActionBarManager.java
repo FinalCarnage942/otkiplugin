@@ -73,7 +73,8 @@ public class ActionBarManager {
             player.sendActionBar(formatActionBar(abilityName, cooldown));
         } else if (isDraculoxItem(mainHand)) {
             String abilityName = DraculoxItem.getAbilityNameFromPlayer(player);
-            player.sendActionBar(formatActionBar(abilityName, 0));
+            double cooldown = Draculox.getCooldownRemaining(player, abilityName);
+            player.sendActionBar(formatActionBar(abilityName, cooldown));
         } else {
             player.sendActionBar("");
         }
@@ -123,78 +124,6 @@ public class ActionBarManager {
         }
     }
 
-    private String formatAetheriActionBar(Player player, String abilityName, double cooldown) {
-        UUID playerId = player.getUniqueId();
-
-        if (abilityName.equalsIgnoreCase("supercrit")) {
-            if (cooldown > 0) {
-                // On cooldown
-                return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.RED + String.format("%.1fs", cooldown);
-            } else {
-                // Check if currently charging
-                if (Aetheri.isSupercritCharging(player)) {
-                    double chargeProgress = Aetheri.getSupercritChargeProgress(player);
-                    int chargePercentage = (int) (chargeProgress * 100);
-
-                    if (chargeProgress >= 1.0) {
-                        // Fully charged
-                        return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.GREEN + "Charged!";
-                    } else {
-                        // Charging in progress
-                        return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.YELLOW + "Charging " + chargePercentage + "%";
-                    }
-                } else if (Aetheri.isSupercritCharged(player)) {
-                    // Charged and ready to use
-                    return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.GREEN + "Charged!";
-                } else {
-                    // Not charging or not charged
-                    return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.GRAY + "Hold Sneak to Charge";
-                }
-            }
-        }
-        else if (abilityName.equalsIgnoreCase("soar")) {
-            if (cooldown > 0) {
-                // On cooldown
-                return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.RED + String.format("%.1fs", cooldown);
-            } else {
-                // Show activations remaining
-                int activations = Aetheri.getSoarActivations(player);
-                int remainingActivations = 6 - activations;
-
-                if (remainingActivations > 0) {
-                    if (Aetheri.isSoarActive(player)) {
-                        // Currently soaring
-                        double soarTimeRemaining = Aetheri.getSoarTimeRemaining(player);
-                        return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.AQUA + "Active " +
-                                String.format("%.1fs", soarTimeRemaining) + ChatColor.WHITE + " | " + ChatColor.YELLOW +
-                                "Activations: " + activations + "/6";
-                    } else {
-                        // Ready to use
-                        return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.GREEN + "Ready" +
-                                ChatColor.WHITE + " | " + ChatColor.YELLOW + "Activations: " + activations + "/6";
-                    }
-                } else {
-                    // All activations used and  will go on cooldown
-                    return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + ChatColor.GOLD + "Last Use Available";
-                }
-            }
-        }
-        // Default formatting for other abilities
-        else {
-            String cooldownText;
-            ChatColor cooldownColor;
-            if (cooldown > 0) {
-                cooldownText = String.format("%.1fs", cooldown);
-                cooldownColor = ChatColor.RED;
-            } else {
-                cooldownText = "Ready";
-                cooldownColor = ChatColor.GREEN;
-            }
-            return ChatColor.GOLD + abilityName + ChatColor.WHITE + " : " + cooldownColor + cooldownText;
-        }
-    }
-
-
     public void shutdown() {
         if (actionBarTask != null) {
             actionBarTask.cancel();
@@ -202,6 +131,5 @@ public class ActionBarManager {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             player.sendActionBar("");
         }
-        playersWithActionBar.clear();
     }
 }

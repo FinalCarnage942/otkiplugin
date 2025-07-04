@@ -8,7 +8,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Vex;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -160,6 +160,7 @@ public class Draculox implements Listener {
     }
 
     public static void useAbility(Player player, String ability) {
+        UUID playerId = player.getUniqueId();
         switch (ability.toLowerCase()) {
             case "vaporize":
                 if (getCooldownRemaining(player, ability) > 0) {
@@ -201,7 +202,22 @@ public class Draculox implements Listener {
     private static void vaporize(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 160, 0, false, false));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 160, 0, false, false));
-        player.getWorld().spawnParticle(Particle.LARGE_SMOKE, player.getLocation(), 100, 1, 1, 1, 0.1);
+
+        BukkitRunnable smokeTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.getWorld().spawnParticle(Particle.LARGE_SMOKE, player.getLocation(), 10, 0.1, 0.1, 0.1, 0.01);
+            }
+        };
+        smokeTask.runTaskTimer(plugin, 0L, 1L); // Run every tick to create a trail
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                smokeTask.cancel(); // Stop the smoke particles
+                player.removePotionEffect(PotionEffectType.INVISIBILITY);
+            }
+        }.runTaskLater(plugin, 160L); // Remove invisibility after 8 seconds
     }
 
     private static void bloodsuck(Player player) {
@@ -222,11 +238,33 @@ public class Draculox implements Listener {
     }
 
     private static void bloodDemons(Player player) {
-        for (int i = 0; i < 5; i++) {
-            player.getWorld().spawnEntity(player.getLocation(), org.bukkit.entity.EntityType.VEX);
+        Entity target = getTargetEntity(player);
+        if (target != null) {
+            for (int i = 0; i < 5; i++) {
+                Vex vex = (Vex) player.getWorld().spawnEntity(player.getLocation(), org.bukkit.entity.EntityType.VEX);
+                vex.setTarget((LivingEntity) target);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (!vex.isDead()) {
+                            vex.remove();
+                        }
+                    }
+                }.runTaskLater(plugin, 200L); // Despawn after 10 seconds
+            }
         }
         player.getWorld().spawnParticle(Particle.CRIMSON_SPORE, player.getLocation(), 100, 1, 1, 1, 1, new Particle.DustOptions(Color.MAROON, 1));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EVOKER_PREPARE_ATTACK, 1.0f, 1.0f);
+    }
+
+    private static Entity getTargetEntity(Player player) {
+        // Logic to get the entity the player is targeting
+        for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
+            if (entity instanceof LivingEntity && entity != player) {
+                return entity;
+            }
+        }
+        return null;
     }
 
     private static void bloodpact(Player player) {

@@ -44,18 +44,21 @@ public class HydronItem {
         if (item == null || item.getType() != Material.NAUTILUS_SHELL) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
+
         int current = meta.getPersistentDataContainer().getOrDefault(ABILITY_KEY, PersistentDataType.INTEGER, 1);
         int next = (current % 4) + 1;
         meta.getPersistentDataContainer().set(ABILITY_KEY, PersistentDataType.INTEGER, next);
+
         if (meta.hasLore()) {
             var lore = meta.getLore();
-            if (lore != null && lore.size() >= 6) {
+            if (lore != null && lore.size() >= 5) {
                 lore.set(4, ChatColor.GREEN + "Current Ability: " + getAbilityName(next));
                 meta.setLore(lore);
             }
         }
         item.setItemMeta(meta);
     }
+
 
     public static void useAbility(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();
