@@ -1,7 +1,6 @@
 package carnage.otkiplugin;
 
 import carnage.otkiplugin.commands.ClassCommand;
-import carnage.otkiplugin.gui.ClassGUI;
 import carnage.otkiplugin.items.*;
 import carnage.otkiplugin.listeners.ClassGUIListener;
 import carnage.otkiplugin.listeners.classitem.*;
@@ -29,6 +28,7 @@ public final class Otkiplugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CavernonItemListener(), this);
         getServer().getPluginManager().registerEvents(new TerrarorItemListener(), this);
         getServer().getPluginManager().registerEvents(new DraculoxItemListener(), this);
+        getServer().getPluginManager().registerEvents(new EtherioItemListener(), this);
 
         // Initialize classes
         Inferno.init(this);
@@ -43,6 +43,8 @@ public final class Otkiplugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Terraror(), this);
         Draculox.init(this);
         getServer().getPluginManager().registerEvents(new Draculox(), this);
+        Etherio.init(this);
+        getServer().getPluginManager().registerEvents(new Etherio(), this);
 
         // Initialize classes items
         InfernoItem.init(this);
@@ -51,6 +53,7 @@ public final class Otkiplugin extends JavaPlugin {
         CavernonItem.init(this);
         TerrarorItem.init(this);
         DraculoxItem.init(this);
+        EtherioItem.init(this);
 
         // Initialize ActionBar manager
         actionBarManager = new ActionBarManager(this);
@@ -68,7 +71,4 @@ public final class Otkiplugin extends JavaPlugin {
         getLogger().info("Otkiplugin has been disabled!");
     }
 
-    public static Otkiplugin getInstance() {
-        return plugin;
-    }
 }

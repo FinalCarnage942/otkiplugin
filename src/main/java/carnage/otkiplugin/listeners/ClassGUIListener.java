@@ -1,11 +1,6 @@
 package carnage.otkiplugin.listeners;
 
-import carnage.otkiplugin.items.InfernoItem;
-import carnage.otkiplugin.items.AetheriItem;
-import carnage.otkiplugin.items.CavernonItem;
-import carnage.otkiplugin.items.DraculoxItem;
-import carnage.otkiplugin.items.HydronItem;
-import carnage.otkiplugin.items.TerrarorItem;
+import carnage.otkiplugin.items.*;
 
 
 import org.bukkit.ChatColor;
@@ -60,6 +55,11 @@ public class ClassGUIListener implements Listener {
         else if (itemName.equalsIgnoreCase("Terraror")) {
             player.getInventory().addItem(TerrarorItem.createTerrarorItem());
             player.sendMessage(ChatColor.GREEN + "You selected the Terraror class!");
+            player.closeInventory();
+        }
+        else if (itemName.equalsIgnoreCase("Etherio")) {
+            player.getInventory().addItem(EtherioItem.createEtherioItem());
+            player.sendMessage(ChatColor.GREEN + "You selected the Etherio class!");
             player.closeInventory();
         }
     }
